@@ -9,30 +9,36 @@ import java.util.*;
 class Slot_Machine
 {
     static final HashMap<String, Integer> frequency = new HashMap<String, Integer>();
+    static final HashMap<String, Integer> reward = new HashMap<String, Integer>();
 
     static {
     frequency.put("A", 2);
     frequency.put("B", 3);
     frequency.put("C", 4);
-    frequency.put("D", 5);
+    frequency.put("D", 6);
+
+    reward.put("A", 10);
+    reward.put("B", 7);
+    reward.put("C", 4);
+    reward.put("D", 1);
     }
 
     public static float get_Deposit(Scanner scan) { 
         //Scanner scan = new Scanner(System.in); // Create Reader 
         System.out.print("Enter the amount to deposit: "); // Ask the user for something
         float deposit = scan.nextFloat(); // Read value from user
-        //System.out.print(deposit); 
         return deposit;
       }
 
     public static float get_Bet(Scanner scan) { 
+       
         System.out.print("Enter the amount to bet: "); 
         float bet = scan.nextFloat(); 
         return bet;
     }
 
     public static int get_Lines(Scanner scan) { 
-        System.out.print("Enter te number of lines (maximum of 3): "); 
+        System.out.print("Enter the number of lines (maximum of 3): "); 
         int lines = scan.nextInt(); 
         return lines;
     }
@@ -90,27 +96,64 @@ class Slot_Machine
         System.out.println();
 
     }
+
+    public static int check_winnings(String[][] displayed_columns, int lines, float bet){
+        int score = 0;
+        int rows = 3; 
+        int count = 0;
+
+        for (int i = 0; i < rows; i++){
+            if (displayed_columns[i][0].equals(displayed_columns[i][1]) && displayed_columns[i][1].equals(displayed_columns[i][2])){
+                count += 1;
+                if (count <= lines){
+                    score += (reward.get((displayed_columns[i][0]))*bet);
+                }
+            }
+        } 
+
+        return score;
+    }
     public static void main(String args[])
     {
-        
-        String[][] displayed_columns = spin();
-        print(displayed_columns);
-
         Scanner scan = new Scanner(System.in); // Create Reader 
+
         float balance = get_Deposit(scan);
-        float bet = get_Bet(scan);
-        while (bet > balance){ 
-            System.out.print("Insufficient balance! Please try again: " + "\n");
-            bet = get_Bet(scan);
-        }
-        
-        int lines = get_Lines(scan);
+        boolean spin_again = true;
 
-        while (lines < 1 || lines > 3){
-            System.out.print("The number of lines must be 1, 2 or 3." + "\n");
-            lines = get_Lines(scan);
-        }
+        while (spin_again){
+            float bet = get_Bet(scan);
 
+            while (bet > balance){ 
+                System.out.print("Insufficient balance! Please try again: " + "\n");
+                bet = get_Bet(scan);
+            }
+            
+            int lines = get_Lines(scan);
+
+            while (lines < 1 || lines > 3){
+                System.out.print("The number of lines must be 1, 2 or 3." + "\n");
+                lines = get_Lines(scan);
+            }
+
+            String[][] displayed_columns = spin();
+            print(displayed_columns);
+            int score = check_winnings(displayed_columns, lines, bet);
+            balance += score;
+            
+            System.out.println("You won £" + score);
+            System.out.println("Your balance is £" + balance);
+
+            System.out.println("Would you like to spin again (Y/N)? ");
+            String response = scan.nextLine();
+
+            if (response.toLowerCase().equals("y")){
+                spin_again = true;
+            }
+            else{
+                spin_again = false;
+            }
+
+        }
 
     }
 }
