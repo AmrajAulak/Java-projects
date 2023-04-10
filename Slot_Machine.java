@@ -1,8 +1,3 @@
-// import java.util.Scanner; /* Required Import*/ 
-// import java.util.HashMap; 
-// import java.util.Map;
-// import java.util.ArrayList;
-// import java.util.List;
 import java.util.*;
 
 
@@ -12,20 +7,19 @@ class Slot_Machine
     static final HashMap<String, Integer> reward = new HashMap<String, Integer>();
 
     static {
-    frequency.put("A", 2);
-    frequency.put("B", 3);
-    frequency.put("C", 4);
-    frequency.put("D", 6);
+    frequency.put("A", 10);
+    frequency.put("B", 8);
+    frequency.put("C",6);
+    frequency.put("D", 2);
 
-    reward.put("A", 10);
-    reward.put("B", 7);
-    reward.put("C", 4);
-    reward.put("D", 1);
+    reward.put("A", 7);
+    reward.put("B", 8);
+    reward.put("C", 9);
+    reward.put("D", 10);
     }
 
     public static float get_Deposit(Scanner scan) { 
-        //Scanner scan = new Scanner(System.in); // Create Reader 
-        System.out.print("Enter the amount to deposit: "); // Ask the user for something
+        System.out.print("Enter the amount to deposit: "); 
         float deposit = scan.nextFloat(); // Read value from user
         return deposit;
       }
@@ -34,6 +28,7 @@ class Slot_Machine
        
         System.out.print("Enter the amount to bet: "); 
         float bet = scan.nextFloat(); 
+        String str =scan.nextLine(); 
         return bet;
     }
 
@@ -70,9 +65,9 @@ class Slot_Machine
                 int randomIndex = random.nextInt(reel_symbols.size());
                 displayed_columns[i][j] = reel_symbols.get(randomIndex); 
                 reel_symbols.remove(randomIndex);
-                System.out.print(displayed_columns[i][j]);
+                //System.out.print(displayed_columns[i][j]);
             }
-            System.out.print("\n");
+            //System.out.print("\n");
         }
        
         return displayed_columns;
@@ -121,12 +116,6 @@ class Slot_Machine
         boolean spin_again = true;
 
         while (spin_again){
-            float bet = get_Bet(scan);
-
-            while (bet > balance){ 
-                System.out.print("Insufficient balance! Please try again: " + "\n");
-                bet = get_Bet(scan);
-            }
             
             int lines = get_Lines(scan);
 
@@ -134,6 +123,15 @@ class Slot_Machine
                 System.out.print("The number of lines must be 1, 2 or 3." + "\n");
                 lines = get_Lines(scan);
             }
+
+            float bet = get_Bet(scan);
+
+            while ((bet * lines) > balance){ 
+                System.out.print("Insufficient balance! Please try again: " + "\n");
+                bet = get_Bet(scan);
+            }
+
+            balance -= bet * lines; 
 
             String[][] displayed_columns = spin();
             print(displayed_columns);
@@ -154,6 +152,7 @@ class Slot_Machine
             }
 
         }
+        System.out.println("Cashed out! Your final takings are £" + balance +"\n" + "Thanks for playing");
 
     }
 }
